@@ -9,25 +9,25 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #ffffff; --bg2: #fafafa; --grid: #ebebeb; --node: #ffffff; --stroke: #eaeaea; --frame: #ebebeb;
-  --text: #171717; --muted: #666666; --edge: #c9c9c9; --dot: #a8a8a8; --blue: #0070f3; --blue-stroke: #99c8ff;
-  --green: #398e4a; --amber: #c26a00; --red: #da2f35; --active: #171717; --panel: #ffffff; --chip: #f2f2f2;
-  --glow: rgba(0, 112, 243, .14); --hover: #f2f2f2;
+:root { --accent: #8b5cf6; --accent-2: #6d28d9;
+  --bg: #fbfbfd; --bg2: #f5f5fa; --grid: #ebebeb; --node: #ffffff; --stroke: #e3e3ec; --frame: #ebebeb;
+  --text: #15151c; --muted: #62627a; --edge: #c9c9c9; --dot: #a8a8a8; --blue: #7c3aed; --blue-stroke: #c4b5fd;
+  --green: #398e4a; --amber: #c26a00; --red: #da2f35; --active: #6d28d9; --panel: #ffffff; --chip: #f2f2f2;
+  --glow: rgba(124, 58, 237, .16); --hover: #f2f2f2;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #000000; --bg2: #0a0a0a; --grid: #1a1a1a; --node: #0a0a0a; --stroke: #2e2e2e; --frame: #1f1f1f;
-    --text: #ededed; --muted: #a1a1a1; --edge: #454545; --dot: #878787; --blue: #52a8ff; --blue-stroke: #0a4a9c;
-    --green: #62c073; --amber: #ffb224; --red: #ff6166; --active: #ededed; --panel: #0a0a0a; --chip: #1a1a1a;
-    --glow: rgba(82, 168, 255, .22); --hover: #1f1f1f;
+    --bg: #0b0b0f; --bg2: #0a0a0a; --grid: #1d1d26; --node: #111116; --stroke: #26262f; --frame: #1f1f1f;
+    --text: #ededf2; --muted: #9d9dab; --edge: #454545; --dot: #878787; --blue: #a78bfa; --blue-stroke: #5b3fb8;
+    --green: #62c073; --amber: #ffb224; --red: #ff6166; --active: #c4b5fd; --panel: #111116; --chip: #18181f;
+    --glow: rgba(139, 92, 246, .30); --hover: #1a1a22;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #000000; --bg2: #0a0a0a; --grid: #1a1a1a; --node: #0a0a0a; --stroke: #2e2e2e; --frame: #1f1f1f;
-    --text: #ededed; --muted: #a1a1a1; --edge: #454545; --dot: #878787; --blue: #52a8ff; --blue-stroke: #0a4a9c;
-    --green: #62c073; --amber: #ffb224; --red: #ff6166; --active: #ededed; --panel: #0a0a0a; --chip: #1a1a1a;
-    --glow: rgba(82, 168, 255, .22); --hover: #1f1f1f;
+  --bg: #0b0b0f; --bg2: #0a0a0a; --grid: #1d1d26; --node: #111116; --stroke: #26262f; --frame: #1f1f1f;
+    --text: #ededf2; --muted: #9d9dab; --edge: #454545; --dot: #878787; --blue: #a78bfa; --blue-stroke: #5b3fb8;
+    --green: #62c073; --amber: #ffb224; --red: #ff6166; --active: #c4b5fd; --panel: #111116; --chip: #18181f;
+    --glow: rgba(139, 92, 246, .30); --hover: #1a1a22;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; background: var(--bg); color: var(--text); }
@@ -37,28 +37,28 @@ code, .mono { font-family: "Geist Mono", "SF Mono", Menlo, Consolas, monospace; 
 header.top { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 14px; padding: 14px 24px;
   border-bottom: 1px solid var(--stroke); background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(10px); }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; text-decoration: none; }
-.brand .mark { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: var(--text); color: var(--bg); }
+.brand .mark { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: linear-gradient(135deg, #a78bfa, #6d28d9); color: #fff; }
 .brand svg { display: block; }
 .sep { color: var(--stroke); }
 .crumb { color: var(--muted); }
 .spacer { flex: 1; }
 .btn { font: inherit; font-size: 13px; color: var(--text); background: var(--bg); border: 1px solid var(--stroke);
-  border-radius: 6px; height: 32px; padding: 0 12px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: background .15s, border-color .15s; }
+  border-radius: 999px; height: 32px; padding: 0 12px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: background .15s, border-color .15s; }
 .btn:hover { background: var(--hover); }
-.btn.primary:hover { background: color-mix(in srgb, var(--text) 85%, var(--bg)); }
-.btn.primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; border-color: transparent; box-shadow: 0 6px 24px rgba(124,58,237,.35); }
 main { max-width: 1440px; margin: 0 auto; padding: 40px 24px 64px; }
 .hero h1 { font-size: clamp(32px, 4.4vw, 48px); line-height: 1.08; letter-spacing: -0.045em; margin: 0 0 12px; font-weight: 700; }
 .hero p { color: var(--muted); max-width: 720px; margin: 0 0 28px; font-size: 16px; }
 .layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
-.card { border: 1px solid var(--stroke); border-radius: 12px; box-shadow: 0 0 0 1px transparent, 0 2px 2px rgba(0,0,0,.04); background: var(--panel); }
+.card { border: 1px solid var(--stroke); border-radius: 16px; box-shadow: 0 0 0 1px transparent, 0 2px 2px rgba(0,0,0,.04); background: var(--panel); }
 .diagram { overflow: hidden; }
 .diagram-bar { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; border-bottom: 1px solid var(--stroke); align-items: center; }
 .diagram-bar .label { font-size: 12px; color: var(--muted); margin-right: 4px; }
 .scn { font: inherit; font-size: 13px; padding: 6px 11px; border-radius: 999px; border: 1px solid var(--stroke);
   background: var(--bg); color: var(--text); cursor: pointer; }
 .scn:hover { border-color: var(--muted); }
-.scn[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.scn[aria-pressed="true"] { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; border-color: transparent; }
 .canvas { overflow-x: auto; }
 .canvas svg { display: block; width: 100%; height: auto; min-width: 900px; }
 .node { cursor: pointer; outline: none; }
@@ -86,7 +86,7 @@ main { max-width: 1440px; margin: 0 auto; padding: 40px 24px 64px; }
 .steps li::before { content: counter(s); position: absolute; left: 10px; top: 8px; width: 16px; height: 16px; border-radius: 50%;
   border: 1px solid var(--stroke); font: 10px/14px "Geist Mono", monospace; text-align: center; color: var(--muted); }
 .steps li.cur { background: var(--chip); color: var(--text); }
-.steps li.cur::before { background: var(--text); color: var(--bg); border-color: var(--text); }
+.steps li.cur::before { background: var(--accent); color: #fff; border-color: var(--accent); }
 .steps li.done { color: var(--text); }
 .total { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13px; color: var(--muted); }
 .total b { color: var(--text); font-weight: 600; }

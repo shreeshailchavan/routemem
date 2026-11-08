@@ -162,7 +162,7 @@ const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 export function renderSVG(p, { interactive = false, fontCss = "", font = "Geist, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif", mono = "'Geist Mono', 'SF Mono', Menlo, Consolas, monospace" } = {}) {
   const dot = { muted: p.dotMuted, blue: p.blue, green: p.green, amber: p.amber };
   let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="${font}" role="img" aria-label="RouteMem architecture">`;
-  s += `<defs>${fontCss ? `<style>${fontCss}</style>` : ""}<pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="${p.grid}"/></pattern>`;
+  s += `<defs>${fontCss ? `<style>${fontCss}</style>` : ""}<pattern id="grid" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1.1" fill="${p.grid}"/></pattern>`;
   s += `<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9" fill="none" stroke="${p.edge}" stroke-width="1.6"/></marker>`;
   if (interactive) s += `<marker id="arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9" fill="none" stroke="${p.active}" stroke-width="1.8"/></marker>`;
   s += `</defs>`;
@@ -184,7 +184,7 @@ export function renderSVG(p, { interactive = false, fontCss = "", font = "Geist,
   for (const n of nodes) {
     const tag = interactive ? `id="n-${n.id}" class="node" tabindex="0" role="button" aria-label="${esc(n.title)}"` : "";
     s += `<g ${tag}>`;
-    s += `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${NODE_H}" rx="9" fill="${p.node}" stroke="${n.kind === "decide" ? p.blueStroke : p.stroke}" stroke-width="1"${n.dashed ? ' stroke-dasharray="5 4"' : ""}/>`;
+    s += `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${NODE_H}" rx="12" fill="${p.node}" stroke="${n.kind === "decide" ? p.blueStroke : p.stroke}" stroke-width="1"${n.dashed ? ' stroke-dasharray="5 4"' : ""}/>`;
     s += `<circle cx="${n.x + 16}" cy="${n.y + 21}" r="3.5" fill="${dot[KIND_DOT[n.kind]]}"/>`;
     s += `<text x="${n.x + 27}" y="${n.y + 25}" font-size="13.5" font-weight="600" letter-spacing="-0.15" fill="${p.text}">${esc(n.title)}</text>`;
     if (n.ms) s += `<text x="${n.x + n.w - 12}" y="${n.y + 25}" text-anchor="end" font-family="${mono}" font-size="10" fill="${p.muted}">${esc(n.ms)}</text>`;
@@ -192,7 +192,7 @@ export function renderSVG(p, { interactive = false, fontCss = "", font = "Geist,
     s += `</g>`;
   }
   // Legend
-  const lg = [["green", "local GPU"], ["amber", "cloud"], ["blue", "decision"]];
+  const lg = [["green", "local GPU"], ["amber", "cloud"], ["blue", "verification"]];
   let lx = 760;
   s += `<g font-size="11" fill="${p.muted}">`;
   for (const [c, t] of lg) { s += `<circle cx="${lx}" cy="531" r="3.5" fill="${dot[c]}"/><text x="${lx + 9}" y="535">${t}</text>`; lx += 92; }
@@ -201,11 +201,12 @@ export function renderSVG(p, { interactive = false, fontCss = "", font = "Geist,
 }
 
 // Geist design-system greys (Vercel's open design tokens); RouteMem uses its own mark, not Vercel's logo.
+// RouteMem palette: cool near-black / off-white greys with the app's violet as the accent.
 export const PALETTES = {
-  dark: { bg: "#000000", halo: "#000000", grid: "#1a1a1a", node: "#0a0a0a", stroke: "#2e2e2e", frame: "#1f1f1f", text: "#ededed", muted: "#a1a1a1",
-          edge: "#454545", dotMuted: "#878787", blue: "#52a8ff", blueStroke: "#0a4a9c", green: "#62c073", amber: "#ffb224", active: "#ededed" },
-  light: { bg: "#ffffff", halo: "#ffffff", grid: "#ebebeb", node: "#ffffff", stroke: "#eaeaea", frame: "#ebebeb", text: "#171717", muted: "#666666",
-           edge: "#c9c9c9", dotMuted: "#a8a8a8", blue: "#0070f3", blueStroke: "#99c8ff", green: "#398e4a", amber: "#c26a00", active: "#171717" },
+  dark: { bg: "#0b0b0f", halo: "#0b0b0f", grid: "#1d1d26", node: "#111116", stroke: "#26262f", frame: "#22222b", text: "#ededf2", muted: "#9d9dab",
+          edge: "#45455a", dotMuted: "#7a7a8c", blue: "#a78bfa", blueStroke: "#5b3fb8", green: "#5fd08a", amber: "#ffb224", active: "#c4b5fd" },
+  light: { bg: "#fbfbfd", halo: "#fbfbfd", grid: "#e4e4ee", node: "#ffffff", stroke: "#e3e3ec", frame: "#e6e6ef", text: "#15151c", muted: "#62627a",
+           edge: "#c2c2d2", dotMuted: "#a3a3b8", blue: "#7c3aed", blueStroke: "#c4b5fd", green: "#2f8f4e", amber: "#c26a00", active: "#6d28d9" },
 };
 
 // RouteMem's mark: a route between two nodes (24 × 24 box).

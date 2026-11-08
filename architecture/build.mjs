@@ -30,20 +30,21 @@ function banner(p, name) {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="Geist, sans-serif" role="img" aria-label="RouteMem: the verified, cost-aware LLM gateway">
 <defs>
   <style>${fontCss}</style>
-  <pattern id="g" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="${p.grid}" stroke-width="1"/></pattern>
+  <pattern id="g" width="26" height="26" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1.3" fill="${p.grid}"/></pattern>
+  <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a78bfa"/><stop offset="1" stop-color="#6d28d9"/></linearGradient>
   <radialGradient id="fade" cx="50%" cy="42%" r="62%"><stop offset="0" stop-color="${p.bg}" stop-opacity="0"/><stop offset=".85" stop-color="${p.bg}"/></radialGradient>
-  <radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="${dark ? "#ffffff" : "#000000"}" stop-opacity="${dark ? 0.16 : 0.07}"/><stop offset="1" stop-color="${p.bg}" stop-opacity="0"/></radialGradient>
+  <radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#8b5cf6" stop-opacity="${dark ? 0.42 : 0.22}"/><stop offset="1" stop-color="${p.bg}" stop-opacity="0"/></radialGradient>
 </defs>
 <rect width="${W}" height="${H}" fill="${p.bg}"/>
 <rect width="${W}" height="${H}" fill="url(#g)"/>
 <rect width="${W}" height="${H}" fill="url(#fade)"/>
-<circle cx="640" cy="104" r="150" fill="url(#glow)"/>
-<rect x="604" y="64" width="72" height="72" rx="18" fill="${p.text}"/>
-<g transform="translate(616 76) scale(2)" color="${p.bg}">${MARK}</g>
-<text x="640" y="226" text-anchor="middle" font-size="68" font-weight="700" letter-spacing="-3.2" fill="${p.text}">RouteMem</text>
+<ellipse cx="640" cy="110" rx="300" ry="150" fill="url(#glow)"/>
+<rect x="604" y="64" width="72" height="72" rx="20" fill="url(#tile)"/>
+<g transform="translate(616 76) scale(2)" color="#ffffff">${MARK}</g>
+<text x="640" y="226" text-anchor="middle" font-size="66" font-weight="650" letter-spacing="-2.2" fill="${p.text}">RouteMem</text>
 <text x="640" y="270" text-anchor="middle" font-size="22" font-weight="400" letter-spacing="-0.3" fill="${p.muted}">The verified, cost-aware LLM gateway</text>
 <g font-family="${mono}" font-size="13" fill="${p.muted}">
-  <rect x="404" y="302" width="472" height="34" rx="17" fill="${p.node}" stroke="${p.stroke}"/>
+  <rect x="404" y="302" width="472" height="34" rx="17" fill="${p.node}" stroke="${dark ? "#3b2a73" : "#d9ccfb"}"/>
   <text x="640" y="324" text-anchor="middle" fill="${p.text}">model: "routemem-auto"<tspan fill="${p.muted}">  ·  OpenAI-compatible</tspan></text>
 </g>
 </svg>`;

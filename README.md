@@ -6,10 +6,10 @@
 </p>
 
 <p align="center">
-  <a href="https://shreeshailchavan.github.io/routemem/architecture/"><img alt="Interactive architecture" src="https://img.shields.io/badge/architecture-interactive-000000?style=flat-square&labelColor=000000"></a>
-  <a href="docs/EVALUATION.md"><img alt="Cascade accuracy 89.6% vs 90.1%" src="https://img.shields.io/badge/cascade-89.6%25_vs_90.1%25-000000?style=flat-square&labelColor=000000"></a>
-  <a href="docs/EVALUATION.md"><img alt="84% answered on the local GPU" src="https://img.shields.io/badge/local_GPU-84%25_of_answers-000000?style=flat-square&labelColor=000000"></a>
-  <img alt="OpenAI-compatible API" src="https://img.shields.io/badge/API-OpenAI_compatible-000000?style=flat-square&labelColor=000000">
+  <a href="https://shreeshailchavan.github.io/routemem/architecture/"><img alt="Interactive architecture" src="https://img.shields.io/badge/architecture-interactive-7c3aed?style=flat-square&labelColor=15151c"></a>
+  <a href="docs/EVALUATION.md"><img alt="Cascade accuracy 89.6% vs 90.1%" src="https://img.shields.io/badge/cascade-89.6%25_vs_90.1%25-7c3aed?style=flat-square&labelColor=15151c"></a>
+  <a href="docs/EVALUATION.md"><img alt="84% answered on the local GPU" src="https://img.shields.io/badge/local_GPU-84%25_of_answers-7c3aed?style=flat-square&labelColor=15151c"></a>
+  <img alt="OpenAI-compatible API" src="https://img.shields.io/badge/API-OpenAI_compatible-7c3aed?style=flat-square&labelColor=15151c">
 </p>
 
 <p align="center">
@@ -39,7 +39,7 @@ On the measured setup, the agreement cascade answers **84%** of checkable questi
 <p align="center">
   <a href="https://shreeshailchavan.github.io/routemem/film/"><img alt="Watch the RouteMem film (74 s): the agreement cascade, the chat and console on the live deployment, measured results and the architecture" src="docs/media/film-poster.png" width="100%"></a>
 </p>
-<p align="center"><sub><a href="https://shreeshailchavan.github.io/routemem/film/"><b>▶ Watch the 74-second film</b></a> · 1080p, 60 fps · original score · captions burned in</sub></p>
+<p align="center"><sub><a href="https://shreeshailchavan.github.io/routemem/film/"><b>▶ Watch the 74-second film</b></a> · narrated · original score · captions · 1080p, 60 fps</sub></p>
 
 <p align="center">
   <a href="#demo"><img alt="The agreement cascade: two local models agree and the answer stays on the GPU; when they disagree the question escalates to a cloud model" src="docs/media/cascade.gif" width="100%"></a>
