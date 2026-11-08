@@ -37,9 +37,9 @@ On the measured setup, the agreement cascade answers **84%** of checkable questi
 ## Demo
 
 <p align="center">
-  <a href="docs/media/routemem-film.mp4"><img alt="Watch the RouteMem film (74 s): the agreement cascade, the chat and console on the live deployment, measured results and the architecture" src="docs/media/film-poster.png" width="100%"></a>
+  <a href="https://shreeshailchavan.github.io/routemem/film/"><img alt="Watch the RouteMem film (74 s): the agreement cascade, the chat and console on the live deployment, measured results and the architecture" src="docs/media/film-poster.png" width="100%"></a>
 </p>
-<p align="center"><sub><a href="docs/media/routemem-film.mp4"><b>▶ Watch the 74-second film</b></a> · 1080p, 60 fps · captions burned in</sub></p>
+<p align="center"><sub><a href="https://shreeshailchavan.github.io/routemem/film/"><b>▶ Watch the 74-second film</b></a> · 1080p, 60 fps · captions burned in · <a href="https://github.com/shreeshailchavan/routemem/raw/main/docs/media/routemem-film.mp4">download MP4</a></sub></p>
 
 <p align="center">
   <img alt="The agreement cascade: two local models agree and the answer stays on the GPU; when they disagree the question escalates to a cloud model" src="docs/media/cascade.gif" width="100%">
