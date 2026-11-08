@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RouteMem Architecture</title>
+<meta name="description" content="Interactive architecture of RouteMem, an OpenAI-compatible LLM gateway with verified local-first routing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ffffff; --bg2: #fafafa; --grid: #e6e6e6; --node: #ffffff; --stroke: #e2e2e2; --frame: #e5e5e5;
+  --text: #171717; --muted: #6b6b6b; --edge: #b8b8b8; --dot: #a3a3a3; --blue: #0070f3; --blue-stroke: #9cc4f7;
+  --green: #0f9d58; --amber: #d97706; --red: #e5484d; --active: #171717; --panel: #ffffff; --chip: #f2f2f2;
+  --glow: rgba(0, 112, 243, .14);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #000000; --bg2: #0a0a0a; --grid: #1c1c1c; --node: #0a0a0a; --stroke: #2e2e2e; --frame: #262626;
+    --text: #ededed; --muted: #8f8f8f; --edge: #4d4d4d; --dot: #5c5c5c; --blue: #3291ff; --blue-stroke: #1f4f8a;
+    --green: #2bd576; --amber: #f5a623; --red: #ff6166; --active: #ededed; --panel: #0a0a0a; --chip: #1a1a1a;
+    --glow: rgba(50, 145, 255, .22);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #000000; --bg2: #0a0a0a; --grid: #1c1c1c; --node: #0a0a0a; --stroke: #2e2e2e; --frame: #262626;
+  --text: #ededed; --muted: #8f8f8f; --edge: #4d4d4d; --dot: #5c5c5c; --blue: #3291ff; --blue-stroke: #1f4f8a;
+  --green: #2bd576; --amber: #f5a623; --red: #ff6166; --active: #ededed; --panel: #0a0a0a; --chip: #1a1a1a;
+  --glow: rgba(50, 145, 255, .22);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--text); }
+body { font: 15px/1.55 Geist, Inter, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+code, .mono { font-family: "Geist Mono", "SF Mono", Menlo, Consolas, monospace; }
+header.top { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 14px; padding: 14px 24px;
+  border-bottom: 1px solid var(--stroke); background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(10px); }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; text-decoration: none; }
+.brand svg { display: block; }
+.sep { color: var(--stroke); }
+.crumb { color: var(--muted); }
+.spacer { flex: 1; }
+.btn { font: inherit; font-size: 13px; color: var(--text); background: var(--bg); border: 1px solid var(--stroke);
+  border-radius: 8px; padding: 6px 12px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+main { max-width: 1440px; margin: 0 auto; padding: 40px 24px 64px; }
+.hero h1 { font-size: clamp(30px, 4vw, 44px); line-height: 1.1; letter-spacing: -0.035em; margin: 0 0 12px; font-weight: 700; }
+.hero p { color: var(--muted); max-width: 720px; margin: 0 0 28px; font-size: 16px; }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
+.card { border: 1px solid var(--stroke); border-radius: 12px; background: var(--panel); }
+.diagram { overflow: hidden; }
+.diagram-bar { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; border-bottom: 1px solid var(--stroke); align-items: center; }
+.diagram-bar .label { font-size: 12px; color: var(--muted); margin-right: 4px; }
+.scn { font: inherit; font-size: 13px; padding: 6px 11px; border-radius: 999px; border: 1px solid var(--stroke);
+  background: var(--bg); color: var(--text); cursor: pointer; }
+.scn:hover { border-color: var(--muted); }
+.scn[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.canvas { overflow-x: auto; }
+.canvas svg { display: block; width: 100%; height: auto; min-width: 900px; }
+.node { cursor: pointer; outline: none; }
+.node rect { transition: stroke .2s, fill .2s, filter .2s; }
+.node:hover rect, .node:focus-visible rect { stroke: var(--muted); }
+.node.sel rect { stroke: var(--active); stroke-width: 1.5; }
+.node.on rect { stroke: var(--blue); stroke-width: 1.6; filter: drop-shadow(0 0 10px var(--glow)); }
+.node.on.ok rect { stroke: var(--green); }
+.node.on.warn rect { stroke: var(--amber); }
+.node.on.bad rect { stroke: var(--red); }
+.node.dim, .edge.dim, .elabel.dim { opacity: .28; }
+.edge, .elabel, .node { transition: opacity .25s; }
+.edge.on { stroke: var(--active); stroke-width: 1.8; marker-end: url(#arrow-on); }
+.pulse { fill: var(--blue); filter: drop-shadow(0 0 6px var(--blue)); }
+.side { position: sticky; top: 76px; display: grid; gap: 16px; }
+.panel { padding: 18px; }
+.panel h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 10px; font-weight: 500; }
+.panel h3 { margin: 0 0 6px; font-size: 18px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px; }
+.panel p { margin: 0 0 12px; color: var(--muted); font-size: 14px; }
+.kdot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.facts { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.facts li { font-size: 13px; padding: 7px 10px; border-radius: 8px; background: var(--chip); }
+.steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; counter-reset: s; }
+.steps li { position: relative; padding: 8px 10px 8px 34px; border-radius: 8px; font-size: 13.5px; color: var(--muted); counter-increment: s; transition: background .2s, color .2s; }
+.steps li::before { content: counter(s); position: absolute; left: 10px; top: 8px; width: 16px; height: 16px; border-radius: 50%;
+  border: 1px solid var(--stroke); font: 10px/14px "Geist Mono", monospace; text-align: center; color: var(--muted); }
+.steps li.cur { background: var(--chip); color: var(--text); }
+.steps li.cur::before { background: var(--text); color: var(--bg); border-color: var(--text); }
+.steps li.done { color: var(--text); }
+.total { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13px; color: var(--muted); }
+.total b { color: var(--text); font-weight: 600; }
+.controls { display: flex; gap: 8px; margin-top: 12px; }
+.hint { font-size: 12.5px; color: var(--muted); padding: 12px; border-top: 1px solid var(--stroke); display: flex; gap: 16px; flex-wrap: wrap; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin-top: 20px; }
+.stat { padding: 18px; border-right: 1px solid var(--stroke); }
+.stat:last-child { border-right: 0; }
+.stat .v { font-size: 26px; font-weight: 700; letter-spacing: -0.03em; }
+.stat .l { font-size: 13px; color: var(--muted); }
+footer { color: var(--muted); font-size: 13px; text-align: center; padding: 28px 0 0; }
+@media (max-width: 1080px) { .layout { grid-template-columns: 1fr; } .side { position: static; } .stats { grid-template-columns: repeat(2, 1fr); } .stat:nth-child(2) { border-right: 0; } .stat:nth-child(-n+2) { border-bottom: 1px solid var(--stroke); } }
+@media (max-width: 560px) { main { padding: 28px 16px 48px; } header.top { padding: 12px 16px; } .crumb, .sep { display: none; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="https://github.com/shreeshailchavan/routemem">
+    <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="currentColor"/></svg>
+    RouteMem
+  </a>
+  <span class="sep">/</span><span class="crumb">Architecture</span>
+  <span class="spacer"></span>
+  <button class="btn" id="theme" type="button" aria-label="Toggle theme">◐ Theme</button>
+  <a class="btn primary" href="https://github.com/shreeshailchavan/routemem">GitHub</a>
+</header>
+<main>
+  <section class="hero">
+    <h1>How a request moves through RouteMem</h1>
+    <p>An OpenAI-compatible gateway that checks the cheap answers first. Pick a scenario to watch a request flow through the system, or click any component for what it does and what was measured.</p>
+  </section>
+  <div class="layout">
+    <section class="card diagram">
+      <div class="diagram-bar" id="scenarios"><span class="label">Play a request</span></div>
+      <div class="canvas" id="canvas"></div>
+      <div class="hint"><span>Click a component for details</span><span>← → step through a scenario</span><span>Esc to reset</span></div>
+    </section>
+    <aside class="side">
+      <section class="card panel" id="flow">
+        <h2>Scenario</h2>
+        <p id="flow-empty">Choose a scenario above to watch it step by step.</p>
+        <div id="flow-body" hidden>
+          <div class="total"><span id="flow-name"></span><b id="flow-total"></b></div>
+          <ol class="steps" id="flow-steps"></ol>
+          <div class="controls">
+            <button class="btn" id="prev" type="button">← Back</button>
+            <button class="btn" id="play" type="button">Replay</button>
+            <button class="btn" id="next" type="button">Next →</button>
+          </div>
+        </div>
+      </section>
+      <section class="card panel" id="detail">
+        <h2>Component</h2>
+        <h3 id="d-title">Agreement cascade</h3>
+        <p id="d-what"></p>
+        <ul class="facts" id="d-facts"></ul>
+      </section>
+    </aside>
+  </div>
+  <section class="card stats" aria-label="Measured results">
+    <div class="stat"><div class="v">89.6% <span style="color:var(--muted);font-weight:500">vs 90.1%</span></div><div class="l">cascade vs its cloud model, 84% answered locally</div></div>
+    <div class="stat"><div class="v">94.0%</div><div class="l">learned intent classifier (rules: 61.4%)</div></div>
+    <div class="stat"><div class="v">2.6×</div><div class="l">vLLM vs Ollama throughput on one A10G</div></div>
+    <div class="stat"><div class="v">135 s → 2 s</div><div class="l">latency while the GPU is stopped</div></div>
+  </section>
+  <footer>Measured results and method: <a href="https://github.com/shreeshailchavan/routemem/blob/main/docs/EVALUATION.md">EVALUATION.md</a> · Full design: <a href="https://github.com/shreeshailchavan/routemem/blob/main/docs/ARCHITECTURE.md">ARCHITECTURE.md</a></footer>
+</main>
+<script type="module">
+import { nodes, edges, scenarios, renderSVG, KIND_DOT } from "./arch.js";
+
+const V = (n) => `var(--${n})`;
+const palette = { bg: "transparent", halo: V("panel"), grid: V("grid"), node: V("node"), stroke: V("stroke"), frame: V("frame"), text: V("text"),
+  muted: V("muted"), edge: V("edge"), dotMuted: V("dot"), blue: V("blue"), blueStroke: V("blue-stroke"), green: V("green"),
+  amber: V("amber"), active: V("active") };
+const canvas = document.getElementById("canvas");
+canvas.innerHTML = renderSVG(palette, { interactive: true });
+const svg = canvas.querySelector("svg");
+const byId = Object.fromEntries(nodes.map((n) => [n.id, n]));
+const $ = (s) => document.querySelector(s);
+
+// Theme toggle (remembered per browser when storage is available)
+const root = document.documentElement;
+try { const t = localStorage.getItem("rm-theme"); if (t) root.dataset.theme = t; } catch {}
+$("#theme").onclick = () => {
+  const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  root.dataset.theme = dark ? "light" : "dark";
+  try { localStorage.setItem("rm-theme", root.dataset.theme); } catch {}
+};
+
+// Component details
+const dotVar = { muted: "dot", blue: "blue", green: "green", amber: "amber" };
+function show(id) {
+  const n = byId[id];
+  svg.querySelectorAll(".node").forEach((g) => g.classList.toggle("sel", g.id === `n-${id}`));
+  $("#d-title").innerHTML = `<span class="kdot" style="background:var(--${dotVar[KIND_DOT[n.kind]]})"></span>${n.title}`;
+  $("#d-what").textContent = n.what;
+  $("#d-facts").innerHTML = (n.facts || []).map((f) => `<li>${f.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</li>`).join("");
+}
+svg.querySelectorAll(".node").forEach((g) => {
+  const id = g.id.slice(2);
+  g.addEventListener("click", () => show(id));
+  g.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); show(id); } });
+});
+show("cascade");
+
+// Scenarios
+let cur = null, step = -1, timer = null;
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const bar = document.getElementById("scenarios");
+for (const sc of scenarios) {
+  const b = document.createElement("button");
+  b.className = "scn"; b.type = "button"; b.textContent = sc.name; b.dataset.id = sc.id; b.setAttribute("aria-pressed", "false");
+  b.onclick = () => start(sc.id);
+  bar.appendChild(b);
+}
+function clear() {
+  svg.querySelectorAll(".on, .dim, .ok, .warn, .bad").forEach((el) => el.classList.remove("on", "dim", "ok", "warn", "bad"));
+  svg.querySelectorAll(".pulse").forEach((c) => c.remove());
+}
+function lit(upTo) {
+  clear();
+  const sc = cur, seen = new Set();
+  sc.steps.slice(0, upTo + 1).forEach((s) => s.on.forEach((x) => seen.add(x)));
+  svg.querySelectorAll(".node, .edge, .elabel").forEach((el) => {
+    const id = el.classList.contains("node") ? el.id.slice(2) : el.classList.contains("edge") ? el.id : el.dataset.for;
+    if (!seen.has(id)) el.classList.add("dim");
+  });
+  const s = sc.steps[upTo];
+  for (const x of s.on) {
+    const el = x.startsWith("e-") ? svg.getElementById(x) : svg.getElementById(`n-${x}`);
+    if (!el) continue;
+    el.classList.add("on");
+    if (s.tone && !x.startsWith("e-")) el.classList.add(s.tone === "miss" ? "on" : s.tone);
+    if (x.startsWith("e-") && !reduce) pulse(el);
+  }
+  if (s.back) pulseBack(s.back);
+  [...document.querySelectorAll("#flow-steps li")].forEach((li, i) => { li.className = i < upTo ? "done" : i === upTo ? "cur" : ""; });
+  const last = s.on.filter((x) => !x.startsWith("e-")).pop();
+  if (last) show(last === "client" && s.back ? s.back : last);
+}
+function pulse(path) {
+  const len = path.getTotalLength(), c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  c.setAttribute("r", "4"); c.setAttribute("class", "pulse"); svg.appendChild(c);
+  const t0 = performance.now(), dur = 650;
+  (function f(t) {
+    const k = Math.min(1, (t - t0) / dur), p = path.getPointAtLength(len * (1 - Math.pow(1 - k, 2)));
+    c.setAttribute("cx", p.x); c.setAttribute("cy", p.y);
+    if (k < 1) requestAnimationFrame(f); else setTimeout(() => c.remove(), 150);
+  })(t0);
+}
+function pulseBack(fromId) {
+  if (reduce) return;
+  const a = byId[fromId], b = byId.client;
+  const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  const x1 = a.x, y1 = a.y + 29, x2 = b.x + b.w, y2 = b.y + 29;
+  p.setAttribute("d", `M${x1},${y1} C${x1 - 160},${y1 + 40} ${x2 + 120},${y2 - 60} ${x2},${y2}`);
+  p.setAttribute("fill", "none"); p.setAttribute("stroke", "var(--green)"); p.setAttribute("stroke-width", "1.6");
+  p.setAttribute("stroke-dasharray", "4 5"); p.setAttribute("class", "pulse-path"); svg.appendChild(p);
+  pulse(p);
+  setTimeout(() => p.remove(), 1600);
+}
+function start(id) {
+  cur = scenarios.find((s) => s.id === id); step = -1;
+  bar.querySelectorAll(".scn").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.id === id)));
+  $("#flow-empty").hidden = true; $("#flow-body").hidden = false;
+  $("#flow-name").textContent = cur.name; $("#flow-total").textContent = cur.total;
+  $("#flow-steps").innerHTML = cur.steps.map((s) => `<li>${s.text.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</li>`).join("");
+  [...document.querySelectorAll("#flow-steps li")].forEach((li, i) => { li.style.cursor = "pointer"; li.onclick = () => { stop(); go(i); }; });
+  play();
+}
+function go(i) { if (!cur) return; step = Math.max(0, Math.min(cur.steps.length - 1, i)); lit(step); }
+function stop() { clearTimeout(timer); timer = null; }
+function play() {
+  stop(); go(0);
+  const tick = () => { if (step < cur.steps.length - 1) { go(step + 1); timer = setTimeout(tick, 1700); } };
+  timer = setTimeout(tick, 1700);
+}
+$("#next").onclick = () => { stop(); go(step + 1); };
+$("#prev").onclick = () => { stop(); go(step - 1); };
+$("#play").onclick = () => cur && play();
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") { stop(); go(step + 1); }
+  else if (e.key === "ArrowLeft") { stop(); go(step - 1); }
+  else if (e.key === "Escape") { stop(); cur = null; clear(); bar.querySelectorAll(".scn").forEach((b) => b.setAttribute("aria-pressed", "false")); $("#flow-empty").hidden = false; $("#flow-body").hidden = true; }
+});
+const first = new URLSearchParams(location.search).get("play");
+if (first && scenarios.some((s) => s.id === first)) start(first);
+</script>
+</body>
+</html>

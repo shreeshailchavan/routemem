@@ -1,24 +1,45 @@
-# RouteMem
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/media/banner-dark.svg">
+    <img alt="RouteMem: the verified, cost-aware LLM gateway" src="docs/media/banner-light.svg" width="100%">
+  </picture>
+</p>
 
-**An OpenAI-compatible LLM gateway that decides which model answers each request, checks answers where they can
-be checked, and reports the cost of every decision.**
+<p align="center">
+  <a href="https://shreeshailchavan.github.io/routemem/architecture/"><img alt="Interactive architecture" src="https://img.shields.io/badge/architecture-interactive-000000?style=flat-square&labelColor=000000"></a>
+  <a href="docs/EVALUATION.md"><img alt="Cascade accuracy 89.6% vs 90.1%" src="https://img.shields.io/badge/cascade-89.6%25_vs_90.1%25-000000?style=flat-square&labelColor=000000"></a>
+  <a href="docs/EVALUATION.md"><img alt="84% answered on the local GPU" src="https://img.shields.io/badge/local_GPU-84%25_of_answers-000000?style=flat-square&labelColor=000000"></a>
+  <img alt="OpenAI-compatible API" src="https://img.shields.io/badge/API-OpenAI_compatible-000000?style=flat-square&labelColor=000000">
+</p>
 
-Point any OpenAI SDK at RouteMem and send `model: "routemem-auto"`. The gateway routes the request to a local GPU
-model or a cloud model, falls back when a backend fails, caches and remembers, and returns a `routemem_metadata`
-block with the model that answered, why, how long each stage took and what it cost.
+<p align="center">
+  <a href="#demo"><b>Demo</b></a> ·
+  <a href="#measured-results"><b>Results</b></a> ·
+  <a href="#architecture"><b>Architecture</b></a> ·
+  <a href="https://shreeshailchavan.github.io/routemem/architecture/"><b>Interactive diagram ↗</b></a> ·
+  <a href="docs/EVALUATION.md"><b>Evaluation</b></a>
+</p>
 
-The research question behind it: **can small local models answer most questions as well as a larger cloud model,
-if the gateway verifies them first?** On the measured setup, the agreement cascade answers 84% of checkable
-questions locally and stays within 0.5 points of its cloud escalation model.
+<br>
 
-> This repository is the public showcase: design, measured results, screenshots and a demo. The source code is
-> in a private repository.
+RouteMem is an **OpenAI-compatible LLM gateway**. Send `model: "routemem-auto"` and it decides which model answers
+each request: a local GPU model or a cloud model. It checks answers where they can be checked, falls back when a
+backend fails, caches and remembers, and returns a `routemem_metadata` block saying which model answered, why, how
+long each stage took and what it cost.
 
-![RouteMem demo: a maths question verified by the cascade on the local GPU, a coding answer opened as a code artifact, then the console](docs/media/demo.gif)
+**The question it answers:** can small local models match a larger cloud model if the gateway verifies them first?
+On the measured setup, the agreement cascade answers **84%** of checkable questions locally and stays within
+**0.5 points** of its cloud escalation model.
 
-<sub>Recorded on the AWS deployment (A10G GPU worker). Full-quality video: [docs/media/demo.mp4](docs/media/demo.mp4).</sub>
+> This is the public showcase: design, measured results, screenshots and a demo. The source code is in a private
+> repository.
 
----
+## Demo
+
+<p align="center">
+  <img alt="RouteMem demo: a maths question verified by the cascade on the local GPU, a coding answer opened as a code artifact, then the console" src="docs/media/demo.gif" width="100%">
+</p>
+<p align="center"><sub>Recorded on the AWS deployment (A10G GPU worker) · <a href="docs/media/demo.mp4">full-quality MP4</a></sub></p>
 
 ## Measured results
 
@@ -39,27 +60,17 @@ charts: **[docs/EVALUATION.md](docs/EVALUATION.md)**.
 What did **not** work, also measured: fine-tuning a 3B base model lowered its accuracy (−4.3 and −3.1 points), and
 per-task learned escalation did not beat random routing. Choosing better base models helped more.
 
----
+## Architecture
 
-## How it works
-
-```mermaid
-flowchart LR
-  client["Client<br/>OpenAI SDK · curl · /chat"] --> gw
-  subgraph gw["RouteMem gateway (FastAPI)"]
-    direction TB
-    auth["Auth, rate limits,<br/>quotas, budget"] --> cache{"Exact cache (Redis)<br/>Semantic cache (Qdrant)"}
-    cache -- miss --> mem["Memory recall<br/>+ compression"]
-    mem --> prof["Profile: intent<br/>+ difficulty"]
-    prof --> route{"Route"}
-    route -- "checkable answer" --> cas["Agreement cascade"]
-    route -- "other" --> exe["Executor:<br/>fallbacks, hedging,<br/>circuit breaker"]
-  end
-  cas --> local["Local GPU (Ollama / vLLM)<br/>nemotron-3.5-bolt · gpt-oss:20b"]
-  cas -- "models disagree" --> cloud["Cloud<br/>Groq · Gemini · others"]
-  exe --> local
-  exe -- "fallback" --> cloud
-```
+<p align="center">
+  <a href="https://shreeshailchavan.github.io/routemem/architecture/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/media/architecture-dark.svg">
+      <img alt="RouteMem architecture: client, Caddy HTTPS and auth, a request pipeline of exact cache, semantic cache, compression, memory, profiling and routing, then the agreement cascade or the executor, local GPU and cloud models, a GPU replica in another zone, and shared state and operations" src="docs/media/architecture-light.svg" width="100%">
+    </picture>
+  </a>
+</p>
+<p align="center"><sub><a href="https://shreeshailchavan.github.io/routemem/architecture/"><b>Open the interactive version ↗</b></a> · click any component, or play a request: cache hit, cascade agrees or disagrees, GPU stopped, GPU zone full</sub></p>
 
 1. **Caches.** An exact cache (Redis) and a semantic cache (Qdrant, bge-small). A semantic hit also needs the same
    numbers, negations and key terms, so "2 + 3" never returns the answer to "2 + 4".
@@ -78,8 +89,6 @@ flowchart LR
 Full design (deployment topology, request pipeline, cascade, executor, memory, jobs, learning loop, data stores,
 API, observability, operations): **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
 
----
-
 ## Screenshots
 
 | Chat: cascade-verified answer and code artifact | Console: routing decisions per request |
@@ -89,8 +98,6 @@ API, observability, operations): **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)*
 | ![Console overview with requests over time, answering models and stage latency](docs/media/console-overview.png) | ![Models view with per-task measured accuracy](docs/media/console-models.png) |
 | **Chat: light theme** | **Chat: start page** |
 | ![Chat in light theme with an auto-titled conversation](docs/media/chat-light.png) | ![Chat start page with starter prompts](docs/media/chat-home.png) |
-
----
 
 ## Using it
 
@@ -107,8 +114,6 @@ r = client.chat.completions.create(
 print(r.choices[0].message.content)
 print(r.model_extra["routemem_metadata"])   # model chosen, cascade result, cost, stage timings
 ```
-
----
 
 ## Features
 
@@ -144,6 +149,7 @@ demand, so the whole system runs for a few dollars a day of active use.
 
 | Document | What it covers |
 |---|---|
+| [Interactive architecture](https://shreeshailchavan.github.io/routemem/architecture/) | click-through diagram with request scenarios |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | design: topology, pipeline, cascade, executor, GPU on demand, data stores, API |
 | [docs/EVALUATION.md](docs/EVALUATION.md) | all measured results with method and confidence intervals |
 | [reports/serving/summary.md](reports/serving/summary.md) | Ollama vs vLLM serving benchmark |
@@ -154,6 +160,4 @@ demand, so the whole system runs for a few dollars a day of active use.
 The implementation is private. If you are evaluating this work (hiring, research collaboration), message me on
 GitHub or LinkedIn and I can walk you through the code.
 
----
-
-Built by [Shreeshail Chavan](https://github.com/shreeshailchavan). © 2026, all rights reserved.
+<p align="center"><sub>Built by <a href="https://github.com/shreeshailchavan">Shreeshail Chavan</a> · © 2026, all rights reserved</sub></p>
