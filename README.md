@@ -1,8 +1,8 @@
 <p align="center">
-  <picture>
+  <a href="#demo"><picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/media/banner-dark.svg">
     <img alt="RouteMem: the verified, cost-aware LLM gateway" src="docs/media/banner-light.svg" width="100%">
-  </picture>
+  </picture></a>
 </p>
 
 <p align="center">
@@ -42,14 +42,14 @@ On the measured setup, the agreement cascade answers **84%** of checkable questi
 <p align="center"><sub><a href="https://shreeshailchavan.github.io/routemem/film/"><b>▶ Watch the 74-second film</b></a> · 1080p, 60 fps · original score · captions burned in</sub></p>
 
 <p align="center">
-  <img alt="The agreement cascade: two local models agree and the answer stays on the GPU; when they disagree the question escalates to a cloud model" src="docs/media/cascade.gif" width="100%">
+  <a href="#demo"><img alt="The agreement cascade: two local models agree and the answer stays on the GPU; when they disagree the question escalates to a cloud model" src="docs/media/cascade.gif" width="100%"></a>
 </p>
 <p align="center"><sub>The agreement cascade, from the film</sub></p>
 
 <details>
 <summary><b>Raw screen recording</b> (44 s, AWS deployment, A10G GPU worker)</summary>
 <br>
-<img alt="RouteMem demo: a maths question verified by the cascade on the local GPU, a coding answer opened as a code artifact, then the console" src="docs/media/demo.gif" width="100%">
+<a href="#demo"><img alt="RouteMem demo: a maths question verified by the cascade on the local GPU, a coding answer opened as a code artifact, then the console" src="docs/media/demo.gif" width="100%"></a>
 </details>
 
 ## Measured results
@@ -104,11 +104,11 @@ API, observability, operations): **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)*
 
 | Chat: cascade-verified answer and code artifact | Console: routing decisions per request |
 |---|---|
-| ![Chat with a cascade-verified answer and a code artifact](docs/media/chat-dark.png) | ![Requests view listing task, model, cascade result, latency and cost](docs/media/console-requests.png) |
+| <a href="#screenshots"><img alt="Chat with a cascade-verified answer and a code artifact" src="docs/media/chat-dark.png"></a> | <a href="#screenshots"><img alt="Requests view listing task, model, cascade result, latency and cost" src="docs/media/console-requests.png"></a> |
 | **Console: overview** | **Console: model registry with measured accuracy** |
-| ![Console overview with requests over time, answering models and stage latency](docs/media/console-overview.png) | ![Models view with per-task measured accuracy](docs/media/console-models.png) |
+| <a href="#screenshots"><img alt="Console overview with requests over time, answering models and stage latency" src="docs/media/console-overview.png"></a> | <a href="#screenshots"><img alt="Models view with per-task measured accuracy" src="docs/media/console-models.png"></a> |
 | **Chat: light theme** | **Chat: start page** |
-| ![Chat in light theme with an auto-titled conversation](docs/media/chat-light.png) | ![Chat start page with starter prompts](docs/media/chat-home.png) |
+| <a href="#screenshots"><img alt="Chat in light theme with an auto-titled conversation" src="docs/media/chat-light.png"></a> | <a href="#screenshots"><img alt="Chat start page with starter prompts" src="docs/media/chat-home.png"></a> |
 
 ## Using it
 
