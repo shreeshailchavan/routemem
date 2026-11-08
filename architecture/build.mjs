@@ -1,34 +1,51 @@
 // Writes the README's static images from arch.js: docs/media/architecture-{dark,light}.svg and banner-{dark,light}.svg.
-// Run: node architecture/build.mjs
+// GitHub shows README images through <img>, which cannot load web fonts, so Geist and Geist Mono (SIL OFL 1.1,
+// licence in docs/media/fonts/) are embedded in each SVG.
+// Run: node architecture/build.mjs   (fonts from the `geist` npm package: GEIST_DIR=…/node_modules/geist)
 import fs from "node:fs";
-import { renderSVG, PALETTES } from "./arch.js";
+import { renderSVG, PALETTES, MARK } from "./arch.js";
 
 const out = new URL("../docs/media/", import.meta.url);
+const dir = process.env.GEIST_DIR || new URL("../../fonts/node_modules/geist", import.meta.url).pathname;
+const face = (family, file, weight) =>
+  `@font-face{font-family:'${family}';font-weight:${weight};font-style:normal;src:url(data:font/woff2;base64,${fs.readFileSync(`${dir}/dist/fonts/${file}`).toString("base64")}) format('woff2');}`;
+const fontCss = [
+  face("Geist", "geist-sans/Geist-Regular.woff2", 400),
+  face("Geist", "geist-sans/Geist-SemiBold.woff2", 600),
+  face("Geist", "geist-sans/Geist-Bold.woff2", 700),
+  face("Geist Mono", "geist-mono/GeistMono-Regular.woff2", 400),
+].join("");
+fs.mkdirSync(new URL("fonts/", out), { recursive: true });
+fs.copyFileSync(`${dir}/LICENSE.TXT`, new URL("fonts/Geist-OFL-LICENSE.txt", out));
+
 for (const [name, p] of Object.entries(PALETTES)) {
-  fs.writeFileSync(new URL(`architecture-${name}.svg`, out), renderSVG(p));
+  fs.writeFileSync(new URL(`architecture-${name}.svg`, out), renderSVG(p, { fontCss }));
   fs.writeFileSync(new URL(`banner-${name}.svg`, out), banner(p, name));
 }
 
 function banner(p, name) {
-  const W = 1280, H = 360, dark = name === "dark";
-  const glowA = dark ? "#3291ff" : "#0070f3", glowB = dark ? "#2bd576" : "#0f9d58";
-  const font = "Geist, Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif";
-  const mono = "'Geist Mono', 'SF Mono', Menlo, Consolas, monospace";
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="${font}" role="img" aria-label="RouteMem: the verified, cost-aware LLM gateway">
+  const W = 1280, H = 380, dark = name === "dark";
+  const mono = "'Geist Mono', monospace";
+  // Vercel-style hero: square grid fading out from the centre, a soft glow behind the mark, tight bold type.
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="Geist, sans-serif" role="img" aria-label="RouteMem: the verified, cost-aware LLM gateway">
 <defs>
-  <pattern id="g" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="${p.grid}" stroke-width="1"/></pattern>
-  <radialGradient id="fade" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="${p.bg}" stop-opacity="0"/><stop offset="1" stop-color="${p.bg}"/></radialGradient>
-  <linearGradient id="tri" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${glowA}"/><stop offset="1" stop-color="${glowB}"/></linearGradient>
-  <filter id="blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="40"/></filter>
+  <style>${fontCss}</style>
+  <pattern id="g" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="${p.grid}" stroke-width="1"/></pattern>
+  <radialGradient id="fade" cx="50%" cy="42%" r="62%"><stop offset="0" stop-color="${p.bg}" stop-opacity="0"/><stop offset=".85" stop-color="${p.bg}"/></radialGradient>
+  <radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="${dark ? "#ffffff" : "#000000"}" stop-opacity="${dark ? 0.16 : 0.07}"/><stop offset="1" stop-color="${p.bg}" stop-opacity="0"/></radialGradient>
 </defs>
 <rect width="${W}" height="${H}" fill="${p.bg}"/>
 <rect width="${W}" height="${H}" fill="url(#g)"/>
 <rect width="${W}" height="${H}" fill="url(#fade)"/>
-<ellipse cx="640" cy="120" rx="170" ry="60" fill="url(#tri)" opacity="${dark ? 0.35 : 0.18}" filter="url(#blur)"/>
-<path d="M640 58 L686 140 L594 140 Z" fill="${p.text}"/>
-<text x="640" y="218" text-anchor="middle" font-size="64" font-weight="700" letter-spacing="-3" fill="${p.text}">RouteMem</text>
-<text x="640" y="262" text-anchor="middle" font-size="22" fill="${p.muted}" letter-spacing="-0.3">The verified, cost-aware LLM gateway</text>
-<text x="640" y="312" text-anchor="middle" font-family="${mono}" font-size="14" fill="${p.muted}" letter-spacing="0.5">OpenAI-compatible  ·  local-first routing  ·  agreement cascade  ·  caches  ·  memory</text>
+<circle cx="640" cy="104" r="150" fill="url(#glow)"/>
+<rect x="604" y="64" width="72" height="72" rx="18" fill="${p.text}"/>
+<g transform="translate(616 76) scale(2)" color="${p.bg}">${MARK}</g>
+<text x="640" y="226" text-anchor="middle" font-size="68" font-weight="700" letter-spacing="-3.2" fill="${p.text}">RouteMem</text>
+<text x="640" y="270" text-anchor="middle" font-size="22" font-weight="400" letter-spacing="-0.3" fill="${p.muted}">The verified, cost-aware LLM gateway</text>
+<g font-family="${mono}" font-size="13" fill="${p.muted}">
+  <rect x="404" y="302" width="472" height="34" rx="17" fill="${p.node}" stroke="${p.stroke}"/>
+  <text x="640" y="324" text-anchor="middle" fill="${p.text}">model: "routemem-auto"<tspan fill="${p.muted}">  ·  OpenAI-compatible</tspan></text>
+</g>
 </svg>`;
 }
-console.log("wrote", fs.readdirSync(out).filter((f) => f.endsWith(".svg")));
+console.log("wrote", fs.readdirSync(out).filter((f) => f.endsWith(".svg")).map((f) => `${f} ${Math.round(fs.statSync(new URL(f, out)).size / 1024)} KB`));

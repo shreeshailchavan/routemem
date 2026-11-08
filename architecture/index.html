@@ -10,24 +10,24 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #ffffff; --bg2: #fafafa; --grid: #e6e6e6; --node: #ffffff; --stroke: #e2e2e2; --frame: #e5e5e5;
-  --text: #171717; --muted: #6b6b6b; --edge: #b8b8b8; --dot: #a3a3a3; --blue: #0070f3; --blue-stroke: #9cc4f7;
-  --green: #0f9d58; --amber: #d97706; --red: #e5484d; --active: #171717; --panel: #ffffff; --chip: #f2f2f2;
-  --glow: rgba(0, 112, 243, .14);
+  --bg: #ffffff; --bg2: #fafafa; --grid: #ebebeb; --node: #ffffff; --stroke: #eaeaea; --frame: #ebebeb;
+  --text: #171717; --muted: #666666; --edge: #c9c9c9; --dot: #a8a8a8; --blue: #0070f3; --blue-stroke: #99c8ff;
+  --green: #398e4a; --amber: #c26a00; --red: #da2f35; --active: #171717; --panel: #ffffff; --chip: #f2f2f2;
+  --glow: rgba(0, 112, 243, .14); --hover: #f2f2f2;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #000000; --bg2: #0a0a0a; --grid: #1c1c1c; --node: #0a0a0a; --stroke: #2e2e2e; --frame: #262626;
-    --text: #ededed; --muted: #8f8f8f; --edge: #4d4d4d; --dot: #5c5c5c; --blue: #3291ff; --blue-stroke: #1f4f8a;
-    --green: #2bd576; --amber: #f5a623; --red: #ff6166; --active: #ededed; --panel: #0a0a0a; --chip: #1a1a1a;
-    --glow: rgba(50, 145, 255, .22);
+    --bg: #000000; --bg2: #0a0a0a; --grid: #1a1a1a; --node: #0a0a0a; --stroke: #2e2e2e; --frame: #1f1f1f;
+    --text: #ededed; --muted: #a1a1a1; --edge: #454545; --dot: #878787; --blue: #52a8ff; --blue-stroke: #0a4a9c;
+    --green: #62c073; --amber: #ffb224; --red: #ff6166; --active: #ededed; --panel: #0a0a0a; --chip: #1a1a1a;
+    --glow: rgba(82, 168, 255, .22); --hover: #1f1f1f;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #000000; --bg2: #0a0a0a; --grid: #1c1c1c; --node: #0a0a0a; --stroke: #2e2e2e; --frame: #262626;
-  --text: #ededed; --muted: #8f8f8f; --edge: #4d4d4d; --dot: #5c5c5c; --blue: #3291ff; --blue-stroke: #1f4f8a;
-  --green: #2bd576; --amber: #f5a623; --red: #ff6166; --active: #ededed; --panel: #0a0a0a; --chip: #1a1a1a;
-  --glow: rgba(50, 145, 255, .22);
+  --bg: #000000; --bg2: #0a0a0a; --grid: #1a1a1a; --node: #0a0a0a; --stroke: #2e2e2e; --frame: #1f1f1f;
+    --text: #ededed; --muted: #a1a1a1; --edge: #454545; --dot: #878787; --blue: #52a8ff; --blue-stroke: #0a4a9c;
+    --green: #62c073; --amber: #ffb224; --red: #ff6166; --active: #ededed; --panel: #0a0a0a; --chip: #1a1a1a;
+    --glow: rgba(82, 168, 255, .22); --hover: #1f1f1f;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; background: var(--bg); color: var(--text); }
@@ -37,19 +37,21 @@ code, .mono { font-family: "Geist Mono", "SF Mono", Menlo, Consolas, monospace; 
 header.top { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 14px; padding: 14px 24px;
   border-bottom: 1px solid var(--stroke); background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(10px); }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; text-decoration: none; }
+.brand .mark { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: var(--text); color: var(--bg); }
 .brand svg { display: block; }
 .sep { color: var(--stroke); }
 .crumb { color: var(--muted); }
 .spacer { flex: 1; }
 .btn { font: inherit; font-size: 13px; color: var(--text); background: var(--bg); border: 1px solid var(--stroke);
-  border-radius: 8px; padding: 6px 12px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
-.btn:hover { border-color: var(--muted); }
+  border-radius: 6px; height: 32px; padding: 0 12px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: background .15s, border-color .15s; }
+.btn:hover { background: var(--hover); }
+.btn.primary:hover { background: color-mix(in srgb, var(--text) 85%, var(--bg)); }
 .btn.primary { background: var(--text); color: var(--bg); border-color: var(--text); }
 main { max-width: 1440px; margin: 0 auto; padding: 40px 24px 64px; }
-.hero h1 { font-size: clamp(30px, 4vw, 44px); line-height: 1.1; letter-spacing: -0.035em; margin: 0 0 12px; font-weight: 700; }
+.hero h1 { font-size: clamp(32px, 4.4vw, 48px); line-height: 1.08; letter-spacing: -0.045em; margin: 0 0 12px; font-weight: 700; }
 .hero p { color: var(--muted); max-width: 720px; margin: 0 0 28px; font-size: 16px; }
 .layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
-.card { border: 1px solid var(--stroke); border-radius: 12px; background: var(--panel); }
+.card { border: 1px solid var(--stroke); border-radius: 12px; box-shadow: 0 0 0 1px transparent, 0 2px 2px rgba(0,0,0,.04); background: var(--panel); }
 .diagram { overflow: hidden; }
 .diagram-bar { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; border-bottom: 1px solid var(--stroke); align-items: center; }
 .diagram-bar .label { font-size: 12px; color: var(--muted); margin-right: 4px; }
@@ -104,13 +106,13 @@ footer { color: var(--muted); font-size: 13px; text-align: center; padding: 28px
 <body>
 <header class="top">
   <a class="brand" href="https://github.com/shreeshailchavan/routemem">
-    <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="currentColor"/></svg>
+    <span class="mark"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18c4 0 4-12 8-12s4 12 8 12" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="4" cy="18" r="2.4" fill="currentColor"/><circle cx="20" cy="18" r="2.4" fill="currentColor"/></svg></span>
     RouteMem
   </a>
   <span class="sep">/</span><span class="crumb">Architecture</span>
   <span class="spacer"></span>
-  <button class="btn" id="theme" type="button" aria-label="Toggle theme">◐ Theme</button>
-  <a class="btn primary" href="https://github.com/shreeshailchavan/routemem">GitHub</a>
+  <button class="btn" id="theme" type="button" aria-label="Toggle theme"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg>Theme</button>
+  <a class="btn primary" href="https://github.com/shreeshailchavan/routemem"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
 </header>
 <main>
   <section class="hero">

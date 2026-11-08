@@ -159,10 +159,10 @@ export function labelPos(e) {
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 // p: palette (colours or CSS var() strings). interactive adds ids/classes for the page.
-export function renderSVG(p, { interactive = false, font = "Geist, Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif", mono = "'Geist Mono', 'SF Mono', Menlo, Consolas, monospace" } = {}) {
+export function renderSVG(p, { interactive = false, fontCss = "", font = "Geist, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif", mono = "'Geist Mono', 'SF Mono', Menlo, Consolas, monospace" } = {}) {
   const dot = { muted: p.dotMuted, blue: p.blue, green: p.green, amber: p.amber };
   let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="${font}" role="img" aria-label="RouteMem architecture">`;
-  s += `<defs><pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="${p.grid}"/></pattern>`;
+  s += `<defs>${fontCss ? `<style>${fontCss}</style>` : ""}<pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="${p.grid}"/></pattern>`;
   s += `<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9" fill="none" stroke="${p.edge}" stroke-width="1.6"/></marker>`;
   if (interactive) s += `<marker id="arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9" fill="none" stroke="${p.active}" stroke-width="1.8"/></marker>`;
   s += `</defs>`;
@@ -186,7 +186,7 @@ export function renderSVG(p, { interactive = false, font = "Geist, Inter, -apple
     s += `<g ${tag}>`;
     s += `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${NODE_H}" rx="9" fill="${p.node}" stroke="${n.kind === "decide" ? p.blueStroke : p.stroke}" stroke-width="1"${n.dashed ? ' stroke-dasharray="5 4"' : ""}/>`;
     s += `<circle cx="${n.x + 16}" cy="${n.y + 21}" r="3.5" fill="${dot[KIND_DOT[n.kind]]}"/>`;
-    s += `<text x="${n.x + 27}" y="${n.y + 25}" font-size="13.5" font-weight="600" fill="${p.text}">${esc(n.title)}</text>`;
+    s += `<text x="${n.x + 27}" y="${n.y + 25}" font-size="13.5" font-weight="600" letter-spacing="-0.15" fill="${p.text}">${esc(n.title)}</text>`;
     if (n.ms) s += `<text x="${n.x + n.w - 12}" y="${n.y + 25}" text-anchor="end" font-family="${mono}" font-size="10" fill="${p.muted}">${esc(n.ms)}</text>`;
     s += `<text x="${n.x + 16}" y="${n.y + 44}" font-size="11.2" fill="${p.muted}">${esc(n.sub)}</text>`;
     s += `</g>`;
@@ -200,9 +200,13 @@ export function renderSVG(p, { interactive = false, font = "Geist, Inter, -apple
   return s + `</svg>`;
 }
 
+// Geist design-system greys (Vercel's open design tokens); RouteMem uses its own mark, not Vercel's logo.
 export const PALETTES = {
-  dark: { bg: "#000000", halo: "#000000", grid: "#1c1c1c", node: "#0a0a0a", stroke: "#2e2e2e", frame: "#262626", text: "#ededed", muted: "#8f8f8f",
-          edge: "#4d4d4d", dotMuted: "#5c5c5c", blue: "#3291ff", blueStroke: "#1f4f8a", green: "#2bd576", amber: "#f5a623", active: "#ededed" },
-  light: { bg: "#ffffff", halo: "#ffffff", grid: "#e6e6e6", node: "#ffffff", stroke: "#e2e2e2", frame: "#e5e5e5", text: "#171717", muted: "#6b6b6b",
-           edge: "#b8b8b8", dotMuted: "#a3a3a3", blue: "#0070f3", blueStroke: "#9cc4f7", green: "#0f9d58", amber: "#d97706", active: "#171717" },
+  dark: { bg: "#000000", halo: "#000000", grid: "#1a1a1a", node: "#0a0a0a", stroke: "#2e2e2e", frame: "#1f1f1f", text: "#ededed", muted: "#a1a1a1",
+          edge: "#454545", dotMuted: "#878787", blue: "#52a8ff", blueStroke: "#0a4a9c", green: "#62c073", amber: "#ffb224", active: "#ededed" },
+  light: { bg: "#ffffff", halo: "#ffffff", grid: "#ebebeb", node: "#ffffff", stroke: "#eaeaea", frame: "#ebebeb", text: "#171717", muted: "#666666",
+           edge: "#c9c9c9", dotMuted: "#a8a8a8", blue: "#0070f3", blueStroke: "#99c8ff", green: "#398e4a", amber: "#c26a00", active: "#171717" },
 };
+
+// RouteMem's mark: a route between two nodes (24 × 24 box).
+export const MARK = `<path d="M4 18c4 0 4-12 8-12s4 12 8 12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="4" cy="18" r="2.2" fill="currentColor"/><circle cx="20" cy="18" r="2.2" fill="currentColor"/>`;
